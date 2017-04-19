@@ -1,0 +1,28 @@
+#Cocos2d
+
+#Out folders
+bin
+build
+cmake-build-debug
+lib
+
+#Other
+Makefile
+*.json
+CMakeCache.txt
+cmake_install.cmake
+.clang-format
+*.cbp
+*.projectile
+*~
+setup.py
+
+#Big folders
+cocos2d
+CMakeFiles
+
+#Projects
+proj.*
+
+#CLion
+.idea
