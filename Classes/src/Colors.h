@@ -27,6 +27,8 @@ public:
     static const Color4F& WALL;
     static const Color4F& BOX;
     static const Color4B& BACKGROUND;
+
+    static Color4F fromHex(std::string hex);
 };
 
 #endif //MYGAME_COLORS_H

@@ -1,9 +1,11 @@
 #pragma once
 
 #include <src/objects/Id.h>
+#include <json.hpp>
 
-class GameObjectDefinition
-{
+using namespace nlohmann;
+
+class GameObjectDefinition {
 public:
     GameObjectDefinition();
 
@@ -11,9 +13,14 @@ public:
 
     Id getId();
 
-	virtual ~GameObjectDefinition();
+    json getProperties();
+
+    void setProperties(json properties);
+
+    virtual ~GameObjectDefinition();
 
 private:
-	Id id;
+    Id id;
+    json properties;
 };
 

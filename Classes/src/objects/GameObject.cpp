@@ -5,8 +5,8 @@ GameObject::GameObject() : GameObject(Id::EMPTY_SPACE, Color4F(0, 0, 0, 0)) {
 
 }
 
-GameObject::GameObject(Id id, Color4F color, const Vec2 rectangle[]) : color(color), node(DrawNode::create()), id(id) {
-    node->drawPolygon(rectangle, rectangle->length(), color, 0, Color4F::BLACK);
+GameObject::GameObject(Id id, Color4F color, const Vec2 rectangle[]) : color(color), node(DrawNode::create()), id(id), rectangle(rectangle) {
+	draw();
 }
 
 GameObject::GameObject(Id id, Color4F color, Vec2 position) : GameObject(id, color)
@@ -89,6 +89,15 @@ DrawNode *GameObject::getNode() {
 
 Id GameObject::getId() {
     return id;
+}
+
+void GameObject::setColor(Color4F color) {
+	this->color = color;
+	draw();
+}
+
+void GameObject::draw() {
+	node->drawPolygon(rectangle, rectangle->length(), color, 0, Color4F::BLACK);
 }
 
 //GameObject & GameObject::getNull() {

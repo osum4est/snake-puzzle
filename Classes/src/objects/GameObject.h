@@ -20,6 +20,8 @@ public:
 	void setPositionX(float x);
 	void setPositionY(float y);
 
+	void setColor(Color4F color);
+
 	const Vec2& getPosition();
 	float getPositionX();
 	float getPositionY();
@@ -34,9 +36,12 @@ public:
 private:
 	Id id;
 	Color4F color;
+	const Vec2* rectangle;
 	DrawNode* node;
 
 	static const int SIZE = 20;
+
+	void draw();
 
 protected:
 	static const Vec2 RECTANGLE_SMALL[4];

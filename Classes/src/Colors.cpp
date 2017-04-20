@@ -1,4 +1,5 @@
 #include <src/Colors.h>
+#include <iostream>
 
 // My own color scheme based on Monokai
 const Color4B& Colors::BLUE                 = Color4B(102, 217, 239, 255);
@@ -14,3 +15,13 @@ const Color4F& Colors::FOOD_DEFAULT         = Color4F(MAGENTA);
 const Color4F& Colors::BOX                  = Color4F(ORANGE);
 const Color4F& Colors::WALL                 = Color4F(WHITE);
 const Color4B& Colors::BACKGROUND           = Color4B(BLACK);
+
+Color4F Colors::fromHex(std::string hex) {
+    if (hex.find("#") == 0)
+        hex = hex.substr(1);
+    int hexInt = std::stoi(hex, 0, 16);
+    float r = ((hexInt >> 16) & 0xFF) / (float)255;
+    float g = ((hexInt >> 8) & 0xFF) / (float)255;
+    float b = ((hexInt) & 0xFF) / (float)255;
+    return Color4F(r, g, b, 1);
+}

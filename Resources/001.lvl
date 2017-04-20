@@ -17,8 +17,10 @@ X    B B B     X
 X     B B      X
 X              X
 X              X
-X              X
-X              X
+X         P    X
+X     P        X
 X              X
 X   43210S     X
 XXXXXXXXXXXXXXXX
+
+{ "x": 1, "y": 1, "color": "#123456" }

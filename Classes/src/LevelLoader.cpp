@@ -1,7 +1,9 @@
 #include "LevelLoader.h"
+#include <json.hpp>
 #include <iostream>
 #include <src/objects/definitions/SnakePartDefinition.h>
 
+using namespace nlohmann;
 
 LevelLoader::LevelLoader() {
 }
@@ -10,19 +12,27 @@ LevelLoader::LevelLoader() {
 LevelLoader::~LevelLoader() {
 }
 
-// TODO: does 2d vector of object (non-reference or pointer) do bad things?
+// This assumes the level file is made correctly!!!
 std::unique_ptr<std::vector<std::unique_ptr<std::vector<std::unique_ptr<GameObjectDefinition>>>>> LevelLoader::loadLevel(std::string file) {
     std::string token;
+    std::string jsonStartChar = "{";
     auto fullPath = FileUtils::getInstance()->fullPathForFilename(file.c_str());
     auto result = FileUtils::getInstance()->getStringFromFile(fullPath);
 
     std::istringstream fileStringStream(result);
 
     auto levelData = std::vector<std::string>();
+    auto propData = std::vector<json>();
 
     while (getline(fileStringStream, token)) {
-//        log(token.c_str());
-        levelData.push_back(token.c_str());
+        if (!token.empty() && token.find('\n') != 0 && token.find('\r') != 0) {
+            if (token.find('{') == 0) {
+                propData.push_back(json::parse(token));
+            }
+            else {
+                levelData.push_back(token.c_str());
+            }
+        }
     }
 
     // Smart pointer so it doesn't get destroyed at end of method
@@ -34,7 +44,7 @@ std::unique_ptr<std::vector<std::unique_ptr<std::vector<std::unique_ptr<GameObje
     // Start at levelData.size() because Cocos's coordinate system is backwards
     for (int y = levelData.size() - 1; y >= 0; y--) {
         std::unique_ptr<std::vector<std::unique_ptr<GameObjectDefinition>>> objectLine(new std::vector<std::unique_ptr<GameObjectDefinition>>());
-        for (auto x = 0; x < levelData[y].size(); x++) {
+        for (int x = 0; x < levelData[y].size(); x++) {
             std::unique_ptr<GameObjectDefinition> definition = nullptr;
             switch (levelData[y][x]) {
                 case 'X':
@@ -64,6 +74,11 @@ std::unique_ptr<std::vector<std::unique_ptr<std::vector<std::unique_ptr<GameObje
 
         }
         definitions->push_back(std::move(objectLine));
+    }
+
+    for (json props : propData) {
+        definitions->at(definitions->size() - (int)(props["y"]))->at((int)(props["x"]) - 1)->setProperties(props);
+        std::cout << "Assigning data: " << props << std::endl;
     }
 
     return definitions;

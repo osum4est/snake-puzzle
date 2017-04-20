@@ -59,6 +59,7 @@ void Stage::loadLevel() {
         auto& objectRow = level[y];
         for (int x = 0; x < definitionRow->size(); x++) {
             GameObjectDefinition* definition = definitionRow.get()->at(x).get();
+            json properties = definition->getProperties();
             std::unique_ptr<GameObject> newObj = nullptr;
             int xPos = x * SIZE;
             int yPos = y * SIZE;
@@ -93,6 +94,12 @@ void Stage::loadLevel() {
             }
             objectRow.push_back(ObjectStack());
             if (newObj != nullptr) {
+                // Generic Properties
+                if (properties != nullptr) {
+                    try {
+                        newObj->setColor(Colors::fromHex(properties.at("color")));
+                    } catch (std::out_of_range) { }
+                }
                 objectRow.back().pushTop(std::move(newObj));
             }
         }
@@ -120,23 +127,22 @@ void Stage::onTouchMoved(cocos2d::Touch* touch, cocos2d::Event* unused_event)
 		auto x = worldLocation.x - snake.getHead()->getPosition().x;
 		auto y = worldLocation.y - snake.getHead()->getPosition().y;
 
-		if (abs(x) > 10 || abs(y) > 10)
-		{
+		if (abs(x) > 10 || abs(y) > 10) {
             Utils::Direction direction;
-			if (abs(x) > abs(y))
-			{
-				direction = x > 0 ? Utils::RIGHT : Utils::LEFT;
-			}
-			else
-			{
-				direction = y > 0 ? Utils::UP : Utils::DOWN;
-			}
-            GameObject* nextPos = getObjectBySnake(direction);
+            if (abs(x) > abs(y)) {
+                direction = x > 0 ? Utils::RIGHT : Utils::LEFT;
+            }
+            else {
+                direction = y > 0 ? Utils::UP : Utils::DOWN;
+            }
+
+            GameObject *nextPos = getObjectBySnake(direction);
+
             if (nextPos == nullptr) {
                 moveSnake(direction);
             }
             else if (nextPos->getId() == BOX) {
-                GameObject* nextPosBox = getObjectByObject(nextPos, direction);
+                GameObject *nextPosBox = getObjectByObject(nextPos, direction);
                 if (nextPosBox == nullptr) {
                     //TODO: Use recursion to push multiple boxes
                     moveObject(nextPos, direction);
@@ -151,8 +157,8 @@ void Stage::onTouchMoved(cocos2d::Touch* touch, cocos2d::Event* unused_event)
                 addObject(std::move(newPart));
                 removeObject(nextPos);
             }
-		}
-	}
+        }
+    }
 }
 
 void Stage::onTouchEnded(cocos2d::Touch* touch, cocos2d::Event* unused_event)

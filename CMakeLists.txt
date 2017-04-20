@@ -119,6 +119,7 @@ include_directories(
         ${COCOS2D_ROOT}/cocos/platform
         ${COCOS2D_ROOT}/cocos/audio/include/
         Classes
+        lib
 )
 if ( WIN32 )
     include_directories(
