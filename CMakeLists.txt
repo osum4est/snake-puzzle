@@ -136,7 +136,7 @@ set(GAME_SRC
         Classes/src/objects/Snake.cpp
         Classes/src/objects/SnakePart.cpp
         Classes/src/objects/Wall.cpp
-        Classes/src/Stage.cpp
+        Classes/src/scenes/SceneGame.cpp
         Classes/src/LevelLoader.cpp
         Classes/src/AppDelegate.cpp
         Classes/src/objects/ObjectStack.cpp
@@ -154,7 +154,7 @@ set(GAME_HEADERS
         Classes/src/objects/GameObject.h
         Classes/src/objects/Snake.h
         Classes/src/objects/SnakePart.h
-        Classes/src/Stage.h
+        Classes/src/scenes/SceneGame.h
         Classes/src/objects/Wall.h
         Classes/src/LevelLoader.h
         Classes/src/AppDelegate.h
@@ -162,7 +162,10 @@ set(GAME_HEADERS
         Classes/src/objects/Food.h
         Classes/src/objects/Box.h
         ${PLATFORM_SPECIFIC_HEADERS}
-        Classes/src/Colors.h Classes/src/Colors.cpp)
+        Classes/src/Colors.h
+        Classes/src/Colors.cpp
+        Classes/src/scenes/SceneMainMenu.cpp
+        Classes/src/scenes/SceneMainMenu.h)
 
 if( ANDROID )
     add_library(${APP_NAME} SHARED ${GAME_SRC} ${GAME_HEADERS})

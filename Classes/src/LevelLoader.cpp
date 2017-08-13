@@ -1,6 +1,9 @@
 #include "LevelLoader.h"
+#include "HttpClientTest.h"
 #include <iostream>
 #include <src/objects/definitions/SnakePartDefinition.h>
+#include <network/HttpRequest.h>
+#include <network/HttpClient.h>
 
 
 LevelLoader::LevelLoader() {
@@ -67,4 +70,27 @@ std::unique_ptr<std::vector<std::unique_ptr<std::vector<std::unique_ptr<GameObje
     }
 
     return definitions;
+}
+
+void LevelLoader::loadRemoteLevel(std::string file) {
+    network::HttpRequest* request = new network::HttpRequest();
+    request->setUrl("http://lb.8bitforest.com/get_file/" + file + "/");
+    request->setRequestType(network::HttpRequest::Type::GET);
+    request->setResponseCallback(CC_CALLBACK_2(LevelLoader::onRemoteLevelRecieved, LevelLoader()));
+    request->setTag("GET remotelevel");
+    cocos2d::network::HttpClient::getInstance()->send(request);
+    request->release();
+}
+
+void LevelLoader::onRemoteLevelRecieved(network::HttpClient *sender, network::HttpResponse *response) {
+    // dump data
+    auto buffer = response->getResponseData();
+
+    printf("Http Test, dump data: ");
+    for (unsigned int i = 0; i < buffer->size(); i++)
+    {
+        printf("%c", (*buffer)[i]);
+    }
+    printf("\n");
+//    std::cout << response->getResponseDataString() << std::endl;
 }

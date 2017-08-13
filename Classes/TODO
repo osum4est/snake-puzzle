@@ -2,6 +2,8 @@
 
 . .lvl error detection
 
+. level z-ordering
+
 ✓ colors in one place / color schemes
 
 . make walls same size
