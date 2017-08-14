@@ -62,6 +62,7 @@ void SceneMainMenu::buttonLoadLevelEvent(Ref *sender) {
 
 void SceneMainMenu::buttonLoadRemoteLevelEvent(Ref *sender) {
     auto game = SceneGame::createScene();
-    game->loadRemoteLevel(textFieldRemoteLevel->getString().c_str());
+    auto filename = textFieldRemoteLevel->getString();
+    game->loadRemoteLevel(filename.empty() ? textFieldRemoteLevel->getPlaceHolder() : filename);
     Director::getInstance()->pushScene(TransitionCrossFade::create(.25, game->getScene()));
 }

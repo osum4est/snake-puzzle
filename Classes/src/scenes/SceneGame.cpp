@@ -8,7 +8,6 @@
 #include <network/HttpRequest.h>
 #include <network/HttpClient.h>
 #include "src/Colors.h"
-#include "src/HttpClientTest.h"
 
 SceneGame* SceneGame::createScene()
 {
@@ -16,12 +15,17 @@ SceneGame* SceneGame::createScene()
     auto layer = SceneGame::create();
     scene->addChild(layer);
     layer->scene = scene;
+
+    SceneGame::instance = layer;
+
     return layer;
 }
 
 Scene *SceneGame::getScene() {
     return scene;
 }
+
+SceneGame* SceneGame::instance = 0;
 
 bool SceneGame::init() {
     if (!LayerColor::initWithColor(Colors::BACKGROUND)) {
@@ -42,40 +46,21 @@ bool SceneGame::init() {
     // TODO: Make this dynamic
     setPosition(10, 10);
 
-
-
-//    network::HttpRequest* request = new network::HttpRequest();
-//    request->setUrl("http://lb.8bitforest.com/list_files/");
-////    request->setUrl("http://lb.8bitforest.com/get_file/med001.lvl/");
-//    request->setRequestType(network::HttpRequest::Type::GET);
-//    request->setResponseCallback(this, httpresponse_selector(HttpClientTest::onHttpRequestCompleted));
-//    request->setTag("GET test1");
-//
-////    const char* postData = "{\"filename\":\"fromapp.lvl\"}";
-////    request->setRequestData(postData, strlen(postData));
-//
-//    cocos2d::network::HttpClient::getInstance()->send(request);
-//    request->release();
-
-
     return true;
 }
 
-void SceneGame::loadLevel(const char *filename) {
+void SceneGame::loadLevel(std::string filename) {
     // 2d vector array of GameObjectDefinitions
-    auto definitions = LevelLoader::loadLevel("001.lvl");
-    loadLevelFromDefinitions(definitions);
+//    auto definitions = LevelLoader().loadLevelFromFile("001.lvl");
+    loadLevelFromDefinitions(LevelLoader().loadLevelFromFile(filename));
 }
 
-void SceneGame::loadRemoteLevel(const char *filename) {
-    LevelLoader::loadRemoteLevel("easy001.lvl");
+void SceneGame::loadRemoteLevel(std::string filename) {
+    std::unique_ptr<LevelLoader> l(new LevelLoader());
+    (new LevelLoader())->loadRemoteLevel(filename, this);//CC_CALLBACK_1(SceneGame::loadLevelFromDefinitions, this));
 }
 
-void SceneGame::remoteLevelCallback(std::string data) {
-
-}
-
-void SceneGame::loadLevelFromDefinitions(std::unique_ptr<std::vector<std::unique_ptr<std::vector<std::unique_ptr<GameObjectDefinition>>>>>& definitions) {
+void SceneGame::loadLevelFromDefinitions(std::unique_ptr<std::vector<std::unique_ptr<std::vector<std::unique_ptr<GameObjectDefinition>>>>> definitions) {
     for (int y = 0; y < definitions->size(); y++) {
         level.push_back(std::vector<ObjectStack>());
         std::unique_ptr<std::vector<std::unique_ptr<GameObjectDefinition>>> definitionRow = std::move(definitions.get()->at(y));
@@ -122,7 +107,7 @@ void SceneGame::loadLevelFromDefinitions(std::unique_ptr<std::vector<std::unique
     }
 
     for (int y = 0; y < level.size(); y++) {
-        for (int x = 0; x < level[0].size(); x++) {
+        for (int x = 0; x < level[y].size(); x++) {
             for (int i = 0; i < level[y][x].size(); i++) {
                 addChild(level[y][x][i]->getNode());
             }

@@ -119,6 +119,7 @@ include_directories(
         ${COCOS2D_ROOT}/cocos/platform
         ${COCOS2D_ROOT}/cocos/audio/include/
         Classes
+        lib
 )
 if ( WIN32 )
     include_directories(
@@ -128,7 +129,7 @@ if ( WIN32 )
 endif( WIN32 )
 
 set(GAME_SRC
-        Classes/src/Utils.cpp
+        Classes/src/util/Utils.cpp
         Classes/src/objects/definitions/GameObjectDefinition.cpp
         Classes/src/objects/definitions/SnakePartDefinition.cpp
         Classes/src/objects/definitions/BoxDefinition.cpp
@@ -146,7 +147,7 @@ set(GAME_SRC
         )
 
 set(GAME_HEADERS
-        Classes/src/Utils.h
+        Classes/src/util/Utils.h
         Classes/src/objects/Id.h
         Classes/src/objects/definitions/GameObjectDefinition.h
         Classes/src/objects/definitions/SnakePartDefinition.h
@@ -165,7 +166,9 @@ set(GAME_HEADERS
         Classes/src/Colors.h
         Classes/src/Colors.cpp
         Classes/src/scenes/SceneMainMenu.cpp
-        Classes/src/scenes/SceneMainMenu.h)
+        Classes/src/scenes/SceneMainMenu.h
+        Classes/src/scenes/SceneGame.cpp
+        Classes/src/scenes/SceneGame.h Classes/src/HttpClient.cpp Classes/src/HttpClient.h)
 
 if( ANDROID )
     add_library(${APP_NAME} SHARED ${GAME_SRC} ${GAME_HEADERS})

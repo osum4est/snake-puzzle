@@ -13,26 +13,25 @@ public:
     CREATE_FUNC(SceneGame);
 
     Scene* getScene();
+    static SceneGame* instance;
 
     bool onTouchBegan(cocos2d::Touch *touch, cocos2d::Event *unused_event) override;
     void onTouchMoved(cocos2d::Touch *touch, cocos2d::Event *unused_event) override;
     void onTouchEnded(cocos2d::Touch *touch, cocos2d::Event *unused_event) override;
 
-    void loadLevel(const char *filename);
-    void loadRemoteLevel(const char* filename);
-    void remoteLevelCallback(std::string data);
-
+    void loadLevel(std::string filename);
+    void loadRemoteLevel(std::string filename);
+    void loadLevelFromDefinitions(
+            std::unique_ptr<std::vector<std::unique_ptr<std::vector<std::unique_ptr<GameObjectDefinition>>>>> definitions);
     ~SceneGame();
 private:
-    Scene* scene;
 
+    Scene* scene;
     Snake snake;
+
     std::vector<std::vector<ObjectStack>> level;
 
     static const int SIZE = 20;
-
-    void loadLevelFromDefinitions(
-            std::unique_ptr<std::vector<std::unique_ptr<std::vector<std::unique_ptr<GameObjectDefinition>>>>>& definitions);
 
     GameObject * getObjectOnTopAt(Vec2 position);
     GameObject * getObjectBySnake(Utils::Direction direction);
