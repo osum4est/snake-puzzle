@@ -1,0 +1,191 @@
+{% load static %}
+
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="level_builder/levels/static/levels/css/style.css"/>
+        <meta charset="UTF-8" />
+        <title>Level Editor</title>
+        <link rel="stylesheet" href="{% static 'levels/css/style.css' %}" type="text/css">
+        <link rel="stylesheet" href="{% static 'levels/lib/codemirror.css' %}" type="text/css">
+        <link rel="stylesheet" href="{% static 'levels/lib/theme/monokai.css' %}" type="text/css">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    </head>
+
+    <body>
+        <nav class="navbar navbar-inverse navbar-fixed-top">
+            <div class="container-fluid">
+                <div class="navbar-fluid">
+
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="#">Level Editor</a>
+                    <a id="button-save" class="btn btn-primary navbar-btn" onclick="saveClick()">Save</a>
+                </div>
+
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav">
+                        <li class="dropdown">
+                              <a href="#" id="file-picker" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Files<span class="caret"></span></a>
+                              <ul id="files-dropdown" class="dropdown-menu">
+                                  {% for file in files %}
+                                  <li><a onclick="get_file('{{ file }}')" href="#">{{ file }}</a></li>
+                                  {% endfor %}
+                              </ul>
+                        </li>
+                        <li><a href="#" onclick="newClick()">New</a></li>
+                        <li><a href="#" onclick="renameClick()">Rename</a></li>
+                        <li><a href="#" onclick="duplicateClick()">Duplicate</a></li>
+                        <li><a href="#" onclick="deleteClick()">Delete</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <main class="container main-area">
+            <div class="cols">
+                <div class="col1">
+                    <canvas class="page-object" id="level_canvas"
+                            width="340" height="540"
+{#                            style="border:1px solid #f8f8f2;"#}
+                    >
+                    </canvas>
+                </div>
+                <div class="col2">
+                    <div class="page-object object-texteditor">
+                        <ul class="nav nav-tabs">
+                            <li id="tab-props" role="presentation" class="active"><a href="#" onclick="propsClick()">Properties</a></li>
+                            <li id="tab-level" role="presentation"><a href="#" onclick="levelClick()">Level</a></li>
+                        </ul>
+                        <div id="level_textarea_div">
+                            <textarea id="level_textarea"></textarea>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </main>
+        <footer>
+            <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
+            <script type="text/javascript" src="{% static 'levels/js/colors.js' %}"></script>
+            <script type="text/javascript" src="{% static 'levels/js/level_builder.js' %}"></script>
+            <script type="text/javascript" src="{% static 'levels/js/level.js' %}"></script>
+            <script type="text/javascript" src="{% static 'levels/js/utils.js' %}"></script>
+            <script type="text/javascript" src="{% static 'levels/lib/codemirror.js' %}"></script>
+            <script type="text/javascript" src="{% static 'levels/lib/javascript/javascript.js' %}"></script>
+            <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-dialog/1.34.7/css/bootstrap-dialog.min.css" type="text/css">
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-dialog/1.34.7/js/bootstrap-dialog.min.js"></script>
+            {% block javascript %}
+            <script>
+                function csrfSafeMethod(method) {
+                    // these HTTP methods do not require CSRF protection
+                    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+                }
+                $.ajaxSetup({
+                    beforeSend: function(xhr, settings) {
+                        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                        }
+                    }
+                });
+                function get_file(file) {
+                    console.log("{% url 'levels:get_file' 'arg1' %}".replace(/arg1/, file.toString()));
+                    $.ajax({
+                        url: "{% url 'levels:get_file' 'arg1' %}".replace(/arg1/, file.toString()),
+                        success: function(data) {
+                            if (data["success"]) {
+                                $("#file-picker").html(file.toString() + '<span class="caret"></span>');
+                                load_level(file, data["file"]);
+                            }
+                            else {
+                                console.log("Unable to get file :(")
+                            }
+                        }
+                    });
+                }
+                function save_file(changes) {
+                    post("{% url 'levels:save_file' %}", changes, function() {
+                        level_saved_success();
+                    });
+                }
+
+                function create_file(filename) {
+                    filename += ".lvl";
+                    post("{%  url 'levels:new_file' %}", { filename: filename }, function(response) {
+                        get_file(filename);
+                    });
+                }
+
+                function deleteFile(filename) {
+                    post("{% url 'levels:delete_file' %}", { filename: filename }, function(response) {
+                        unloadLevel();
+                    });
+                }
+
+                function renameFile(filename, newfilename) {
+                    newfilename += ".lvl";
+                    post("{% url 'levels:rename_file' %}", { filename: filename, newfilename: newfilename }, function(response) {
+                        $("#file-picker").html(newfilename + '<span class="caret"></span>');
+                    });
+                }
+
+                function duplicateFile(filename, newfilename) {
+                    newfilename += ".lvl";
+                    post("{% url 'levels:duplicate_file' %}", { filename: filename, newfilename: newfilename }, function(result) {
+                        get_file(newfilename);
+                    });
+                }
+
+                function post(url, json, success) {
+                    $.ajax({
+                        type: "POST",
+                        url: url,
+                        dataType: 'text',
+                        data: JSON.stringify(json),
+                        success: function(data) {
+                            var json = JSON.parse(data);
+                            if (json["success"] === true) {
+                                if (json["files_list"] !== undefined) {
+                                    refreshFilesList(json["files_list"]);
+                                }
+                                success(json);
+                            }
+                            else {
+                                if (json["message"] !== undefined && json["message"] !== "") {
+                                    error(json["message"]);
+                                }
+                                else {
+                                    error("Unkown error");
+                                }
+                            }
+                        }
+                    })
+                }
+                        // using jQuery
+                function getCookie(name) {
+                    var cookieValue = null;
+                    if (document.cookie && document.cookie !== '') {
+                        var cookies = document.cookie.split(';');
+                        for (var i = 0; i < cookies.length; i++) {
+                            var cookie = jQuery.trim(cookies[i]);
+                            // Does this cookie string begin with the name we want?
+                            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                                break;
+                            }
+                        }
+                    }
+                    return cookieValue;
+                }
+                var csrftoken = getCookie('csrftoken');
+            </script>
+            {% endblock %}
+        </footer>
+    </body>
+
+</html>

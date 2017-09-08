@@ -1,0 +1,132 @@
+/**
+ * Created by osum4est on 4/21/17.
+ */
+
+function Level(file, levelData) {
+    this.SIZE = 20;
+    this.filename = file;
+
+    this.codebox = $(".CodeMirror")[0].CodeMirror;
+    this.codebox.on("change", this.onEditorChanged.bind(this));
+
+    this.canvas = $("#level_canvas").get(0);
+    this.ctx = this.canvas.getContext('2d');
+    this.textarea = $("#level_textarea");
+
+    this.savebutton = $("#button-save");
+
+    this.canvas.style.background = Colors.BACKGROUND;
+
+
+    this.leveltext = "";
+    this.levelprops = "";
+
+    this.
+
+    for (c = 0; c < levelData.length; c++) {
+        if (levelData[c] === '\n') {
+            if (levelData[c + 1] === '{' || levelData[c + 1] === '\n') {
+                this.leveltext = levelData.substring(0, c);
+                this.levelprops = levelData.substring(c + 1, levelData.length);
+                break;
+            }
+        }
+    }
+
+    this.stripNewLinesFromTexts();
+    this.refreshEditor();
+    this.refreshLevel();
+
+    this.setSaved();
+}
+
+Level.prototype.onEditorChanged = function(editor, change) {
+    if (Level.editingProps() && this.levelprops !== editor.getValue()) {
+        this.levelprops = editor.getValue();
+    }
+    else if (!Level.editingProps() && this.leveltext !== editor.getValue()) {
+        this.leveltext = editor.getValue();
+    }
+    else {
+        return;
+    }
+
+    this.setEdited();
+    this.refreshLevel();
+};
+
+Level.prototype.drawSquare = function(color, x, y) {
+    this.ctx.fillStyle = color;
+    this.ctx.fillRect(x, y, this.SIZE, this.SIZE);
+    // this.ctx.fillRect(this.SIZE + x, this.SIZE + y, this.SIZE, this.SIZE);
+};
+
+Level.prototype.refreshEditor = function() {
+    if (Level.editingProps()) {
+        this.codebox.setValue(this.levelprops);
+    }
+    else {
+        this.codebox.setValue(this.leveltext);
+    }
+};
+
+Level.prototype.refreshLevel = function() {
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+
+    var y = 0;
+    var x = 0;
+    for (var c = 0; c < this.leveltext.length; c++) {
+        char = this.leveltext[c];
+        if (char === '\n') {
+            y++;
+            x = 0;
+        }
+        else {
+            if (char !== ' ') {
+                this.drawSquare(Colors.getColorForObject(this.leveltext[c]), x * this.SIZE, y * this.SIZE);
+            }
+            x++;
+        }
+    }
+};
+
+Level.editingProps = function() {
+    return $("#tab-props").hasClass("active")
+};
+
+Level.prototype.setEdited = function() {
+    this.resetSaveButton();
+    this.savebutton.addClass("btn-primary");
+    this.savebutton.text("Save");
+};
+
+Level.prototype.setSaved = function() {
+    this.resetSaveButton();
+    this.savebutton.addClass("btn-success");
+    this.savebutton.text("Saved!");
+};
+
+Level.prototype.saveLevel = function() {
+    this.stripNewLinesFromTexts();
+    this.refreshEditor();
+
+    var json = {};
+    json["filename"] = this.filename;
+    json["data"] = this.leveltext + "\n\n" + this.levelprops;
+
+    save_file(json);
+};
+
+Level.prototype.resetSaveButton = function() {
+    this.savebutton.removeClass("btn-primary");
+    this.savebutton.removeClass("btn-success");
+};
+
+Level.prototype.stripNewLinesFromTexts = function() {
+    while (this.leveltext.endsWith('\n'))
+        this.leveltext = this.leveltext.substring(0, this.leveltext.length - 1);
+
+    while (this.levelprops.startsWith('\n'))
+        this.levelprops = this.levelprops.substring(1, this.levelprops.length);
+};
