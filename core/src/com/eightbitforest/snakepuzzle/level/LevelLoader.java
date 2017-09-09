@@ -5,20 +5,30 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
+import com.eightbitforest.snakepuzzle.network.HttpClient;
 import com.eightbitforest.snakepuzzle.objects.*;
 import com.eightbitforest.snakepuzzle.utils.Constants;
+import com.eightbitforest.snakepuzzle.utils.ICallback;
 
 import java.util.ArrayList;
 
 public class LevelLoader {
-    public static Level LoadLevel(String filename, Stage stage) {
+    public static Level loadLocalLevel(String filename, Stage stage) {
         FileHandle handle = Gdx.files.internal("levels/" + filename);
         String file = handle.readString();
-        System.out.println("Loading " + filename + "...");
+        return loadFromString(file, stage);
+    }
 
+    public static void loadRemoteLevel(String filename, Stage stage, ICallback<Level> callback) {
+        HttpClient.getLevel(filename + ".lvl", levelString ->
+                callback.callback(loadFromString(levelString, stage)));
+    }
+
+
+    private static Level loadFromString(String levelString, Stage stage) {
         Level level = new Level(Constants.LEVEL_WIDTH, Constants.LEVEL_HEIGHT, stage);
 
-        String[] lines = file.split("\n");
+        String[] lines = levelString.split("\n");
         ArrayList<String> levelLines = new ArrayList<String>();
         ArrayList<String> propLines = new ArrayList<String>();
 

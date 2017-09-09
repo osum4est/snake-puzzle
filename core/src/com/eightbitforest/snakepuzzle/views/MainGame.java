@@ -1,27 +1,28 @@
 package com.eightbitforest.snakepuzzle.views;
 
-import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.eightbitforest.snakepuzzle.level.Level;
-import com.eightbitforest.snakepuzzle.level.LevelLoader;
 import com.eightbitforest.snakepuzzle.utils.Constants;
 import com.eightbitforest.snakepuzzle.utils.Direction;
 
 public class MainGame implements Screen {
 
+    private Game game;
     private Stage stage;
     private Level level;
 
+    public MainGame(Game game, Stage stage, Level level) {
+        this.game = game;
+        this.stage = stage;
+        this.level = level;
+    }
+
     @Override
     public void show() {
-        stage = new Stage(new ExtendViewport(320, 480));
-        level = LevelLoader.LoadLevel("001.lvl", stage);
-
-        Gdx.input.setInputProcessor(stage);
         stage.addListener(new InputListener() {
             boolean moving = false;
 

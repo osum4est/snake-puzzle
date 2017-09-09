@@ -3,14 +3,20 @@ package com.eightbitforest.snakepuzzle;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.eightbitforest.snakepuzzle.utils.Colors;
-import com.eightbitforest.snakepuzzle.views.MainGame;
+import com.eightbitforest.snakepuzzle.views.MainMenu;
 
 public class Main extends Game {
+    private Stage stage;
 
 	@Override
     public void create() {
-        setScreen(new MainGame());
+        stage = new Stage(new ExtendViewport(320, 480));
+        Gdx.input.setInputProcessor(stage);
+
+        setScreen(new MainMenu(this, stage));
     }
 
 	@Override
