@@ -3,11 +3,12 @@ package com.eightbitforest.snakepuzzle.level;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.eightbitforest.snakepuzzle.objects.Box;
-import com.eightbitforest.snakepuzzle.objects.Food;
-import com.eightbitforest.snakepuzzle.objects.SnakeBody;
-import com.eightbitforest.snakepuzzle.objects.Wall;
+import com.badlogic.gdx.utils.JsonReader;
+import com.badlogic.gdx.utils.JsonValue;
+import com.eightbitforest.snakepuzzle.objects.*;
 import com.eightbitforest.snakepuzzle.utils.Constants;
+
+import java.util.ArrayList;
 
 public class LevelLoader {
     public static Level LoadLevel(String filename, Stage stage) {
@@ -18,11 +19,39 @@ public class LevelLoader {
         Level level = new Level(Constants.LEVEL_WIDTH, Constants.LEVEL_HEIGHT, stage);
 
         String[] lines = file.split("\n");
+        ArrayList<String> levelLines = new ArrayList<String>();
+        ArrayList<String> propLines = new ArrayList<String>();
 
         for (int y = 0; y < lines.length; y++) {
-            for (int x = 0; x < lines[y].length(); x++) {
-                char c = lines[y].charAt(x);
-                addGameObject(level, c, x, lines.length - 1 - y);
+            if (!lines[y].isEmpty()) {
+                if (lines[y].contains("{")) {
+                    propLines.add(lines[y]);
+                } else {
+                    levelLines.add(lines[y]);
+                }
+            }
+        }
+
+        for (int y = 0; y < levelLines.size(); y++) {
+            for (int x = 0; x < levelLines.get(y).length(); x++) {
+                char c = levelLines.get(y).charAt(x);
+                addGameObject(level, c, x, levelLines.size() - 1 - y);
+            }
+        }
+
+        for (int i = 0; i < propLines.size(); i++) {
+            JsonValue json = new JsonReader().parse(propLines.get(i));
+            if (json.has("x") && json.has("y")) {
+                ArrayList<GameObject> objects = level.getObjectsAt(
+                        json.getInt("x") - 1,
+                        levelLines.size() - json.getInt("y"));
+                if (objects.size() == 1) {
+                    objects.get(0).setProperties(json);
+                } else {
+                    System.out.println("No object at property position");
+                }
+            } else {
+                System.out.println("Level property missing x and y");
             }
         }
 

@@ -16,4 +16,14 @@ public class Colors {
     public static final Color BOX = ORANGE;
     public static final Color WALL = WHITE;
     public static final Color BACKGROUND = BLACK;
+
+    public static Color fromHex(String hex) {
+        hex = hex.replace("#", "");
+        if (hex.length() == 6) {
+            hex += "FF";
+        }
+//        hex = "0x" + hex;
+        hex = hex.toLowerCase();
+        return new Color((int) Long.parseLong(hex, 16));
+    }
 }
