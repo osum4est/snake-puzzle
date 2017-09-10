@@ -13,6 +13,7 @@ public class Main extends Game {
 
 	@Override
     public void create() {
+        System.out.println("Welcome to snake puzzle");
         stage = new Stage(new ExtendViewport(320, 480));
         Gdx.input.setInputProcessor(stage);
 

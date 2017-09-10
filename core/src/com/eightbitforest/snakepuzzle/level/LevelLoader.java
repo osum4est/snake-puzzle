@@ -19,9 +19,13 @@ public class LevelLoader {
         return loadFromString(file, stage);
     }
 
-    public static void loadRemoteLevel(String filename, Stage stage, ICallback<Level> callback) {
-        HttpClient.getLevel(filename + ".lvl", levelString ->
-                callback.callback(loadFromString(levelString, stage)));
+    public static void loadRemoteLevel(String filename, final Stage stage, final ICallback<Level> callback) {
+        HttpClient.getLevel(filename + ".lvl", new ICallback<String>() {
+            @Override
+            public void callback(String levelString) {
+                callback.callback(loadFromString(levelString, stage));
+            }
+        });
     }
 
 

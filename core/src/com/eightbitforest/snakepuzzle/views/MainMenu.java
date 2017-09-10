@@ -10,7 +10,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.eightbitforest.snakepuzzle.level.Level;
 import com.eightbitforest.snakepuzzle.level.LevelLoader;
+import com.eightbitforest.snakepuzzle.utils.ICallback;
 
 public class MainMenu implements Screen {
 
@@ -26,9 +28,11 @@ public class MainMenu implements Screen {
 
     @Override
     public void show() {
+
         Button playTestLevel = new TextButton("Test Level", skin);
-        playTestLevel.setX(Gdx.graphics.getWidth() / 2 - playTestLevel.getWidth() / 2);
-        playTestLevel.setY(Gdx.graphics.getHeight() / 2 - playTestLevel.getHeight() / 2 + 75);
+        playTestLevel.setY(100);
+//        playTestLevel.setX(Gdx.graphics.getWidth() / 2 - playTestLevel.getWidth() / 2);
+//        playTestLevel.setY(Gdx.graphics.getHeight() / 2 - playTestLevel.getHeight() / 2 + 75);
         playTestLevel.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -49,7 +53,12 @@ public class MainMenu implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 stage.clear();
                 LevelLoader.loadRemoteLevel(remoteLevelTextField.getText(), stage,
-                        level -> game.setScreen(new MainGame(game, stage, level)));
+                        new ICallback<Level>() {
+                            @Override
+                            public void callback(Level level) {
+                                game.setScreen(new MainGame(game, stage, level));
+                            }
+                        });
             }
         });
 

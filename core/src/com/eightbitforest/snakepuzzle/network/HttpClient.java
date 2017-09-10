@@ -7,7 +7,7 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.eightbitforest.snakepuzzle.utils.ICallback;
 
 public class HttpClient {
-    public static void getLevel(String filename, ICallback<String> callback) {
+    public static void getLevel(String filename, final ICallback<String> callback) {
         Net.HttpRequest request = new Net.HttpRequest(Net.HttpMethods.GET);
         request.setUrl("http://lb.8bitforest.com/get_file/" + filename + "/");
         System.out.println("Getting: " + request.getUrl());
@@ -15,10 +15,13 @@ public class HttpClient {
         Gdx.net.sendHttpRequest(request, new Net.HttpResponseListener() {
             @Override
             public void handleHttpResponse(Net.HttpResponse httpResponse) {
-                JsonValue json = new JsonReader().parse(httpResponse.getResultAsString());
-                Gdx.app.postRunnable(() ->
-                        callback.callback(json.getString("file"))
-                );
+                final JsonValue json = new JsonReader().parse(httpResponse.getResultAsString());
+                Gdx.app.postRunnable(new Runnable() {
+                    @Override
+                    public void run() {
+                        callback.callback(json.getString("file"));
+                    }
+                });
             }
 
             @Override
