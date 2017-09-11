@@ -7,6 +7,7 @@ import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.eightbitforest.snakepuzzle.network.HttpClient;
 import com.eightbitforest.snakepuzzle.objects.*;
+import com.eightbitforest.snakepuzzle.objects.activators.Button;
 import com.eightbitforest.snakepuzzle.utils.Constants;
 import com.eightbitforest.snakepuzzle.utils.ICallback;
 
@@ -37,6 +38,8 @@ public class LevelLoader {
         ArrayList<String> propLines = new ArrayList<String>();
 
         for (int y = 0; y < lines.length; y++) {
+            lines[y] = lines[y].replace("\r", "");
+            lines[y] = lines[y].replace("\n", "");
             if (!lines[y].isEmpty()) {
                 if (lines[y].contains("{")) {
                     propLines.add(lines[y]);
@@ -69,6 +72,15 @@ public class LevelLoader {
             }
         }
 
+        for (ArrayList<ArrayList<GameObject>> col : level) {
+            for (ArrayList<GameObject> objects : col) {
+                for (GameObject object : objects) {
+                    object.onUpdate();
+                    object.setZIndex(object.getZ());
+                }
+            }
+        }
+
         return level;
     }
 
@@ -82,6 +94,12 @@ public class LevelLoader {
                 break;
             case 'F':
                 level.addObject(new Food(level, x, y));
+                break;
+            case 'D':
+                level.addObject(new Door(level, x, y));
+                break;
+            case '[':
+                level.addObject(new Button(level, x, y));
                 break;
             case 'S':
                 level.setSnakePosition(x, y);

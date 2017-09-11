@@ -16,6 +16,8 @@ public class Colors {
     public static final Color BOX = ORANGE;
     public static final Color WALL = WHITE;
     public static final Color BACKGROUND = BLACK;
+    public static final Color DOOR_OPEN = new Color(0, .1f, .3f, 1);
+    public static final Color DOOR_CLOSED = new Color(0, .5f, 1, 1);
 
     public static Color fromHex(String hex) {
         hex = hex.replace("#", "");

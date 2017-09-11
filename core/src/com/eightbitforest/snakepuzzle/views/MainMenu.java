@@ -30,9 +30,8 @@ public class MainMenu implements Screen {
     public void show() {
 
         Button playTestLevel = new TextButton("Test Level", skin);
-        playTestLevel.setY(100);
-//        playTestLevel.setX(Gdx.graphics.getWidth() / 2 - playTestLevel.getWidth() / 2);
-//        playTestLevel.setY(Gdx.graphics.getHeight() / 2 - playTestLevel.getHeight() / 2 + 75);
+        playTestLevel.setX(Gdx.graphics.getWidth() / 2 - playTestLevel.getWidth() / 2);
+        playTestLevel.setY(Gdx.graphics.getHeight() / 2 - playTestLevel.getHeight() / 2 + 75);
         playTestLevel.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {

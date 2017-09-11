@@ -4,6 +4,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.eightbitforest.snakepuzzle.level.Level;
 import com.eightbitforest.snakepuzzle.utils.Colors;
 import com.eightbitforest.snakepuzzle.utils.Constants;
+import com.eightbitforest.snakepuzzle.utils.Z;
 
 import java.util.ArrayList;
 
@@ -11,7 +12,7 @@ public class SnakeHead extends GameObject {
     private ArrayList<SnakeBody> body;
 
     public SnakeHead(Level level) {
-        super(level, Colors.SNAKE_HEAD);
+        super(level, 0, 0, Colors.SNAKE_HEAD);
         body = new ArrayList<SnakeBody>();
         setTouchable(Touchable.enabled);
     }
@@ -45,7 +46,12 @@ public class SnakeHead extends GameObject {
     }
 
     @Override
-    public boolean canCollide(GameObject other) {
-        return other instanceof Box || other instanceof Food;
+    public int getZ() {
+        return Z.SNAKE;
     }
+
+    //    @Override
+//    public boolean canCollide(GameObject other) {
+//        return other instanceof Box || other instanceof Food;
+//    }
 }

@@ -8,6 +8,7 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.eightbitforest.snakepuzzle.level.Level;
 import com.eightbitforest.snakepuzzle.utils.Colors;
 import com.eightbitforest.snakepuzzle.utils.Constants;
+import com.eightbitforest.snakepuzzle.utils.Z;
 
 public abstract class GameObject extends Actor {
     protected ShapeRenderer renderer;
@@ -67,9 +68,17 @@ public abstract class GameObject extends Actor {
         return false;
     }
 
+    public void onUpdate() {
+
+    }
+
     public void setProperties(JsonValue json) {
         if (json.has("color")) {
             setColor(Colors.fromHex(json.getString("color")));
         }
+    }
+
+    public int getZ() {
+        return Z.DEFAULT;
     }
 }

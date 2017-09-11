@@ -65,7 +65,7 @@ public class Level implements Iterable<ArrayList<ArrayList<GameObject>>> {
     public boolean canMoveObject(GameObject object, int newX, int newY) {
         ArrayList<GameObject> objects = new ArrayList<GameObject>(level.get(newX).get(newY));
         for (GameObject o : objects)
-            if (!o.canCollide(object) || !object.canCollide(o))
+            if (!(o.canCollide(object) || object.canCollide(o)))
                 return false;
 
         return true;
@@ -103,6 +103,18 @@ public class Level implements Iterable<ArrayList<ArrayList<GameObject>>> {
         }
         moveObject(body.get(0), (int) (snakeHead.getX()), (int) (snakeHead.getY()), true);
         translateObject(snakeHead, direction);
+
+        for (ArrayList<ArrayList<GameObject>> col : this) {
+            for (ArrayList<GameObject> objects : col) {
+                for (GameObject object : objects) {
+                    object.onUpdate();
+                }
+            }
+        }
+    }
+
+    public GameObject getObjectAt(int x, int y) {
+        return level.get(x).get(y).get(0);
     }
 
     public ArrayList<GameObject> getObjectsAt(int x, int y) {

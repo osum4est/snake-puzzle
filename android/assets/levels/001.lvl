@@ -9,10 +9,10 @@ XXXXXXXXXXXXXX X
 X              X
 X     XXXX XXX X
 X              X
-XXXXXXX XXXXXX X
+XXXXXXX XXXXXXDX
 X              X
 X  F F F F F   X
-X              X
+X             [X
 X    B B B     X
 X     B B      X
 X              X
@@ -22,4 +22,5 @@ X              X
 X              X
 X   43210S     X
 XXXXXXXXXXXXXXXX
-{"x": 1, "y": 1, "color": "#FF0000"}
+
+{"x": 15, "y": 12, "activators": [{"x": 15, "y": 15}]}
